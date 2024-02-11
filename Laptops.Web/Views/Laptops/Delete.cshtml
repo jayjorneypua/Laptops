@@ -1,0 +1,69 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@* We will bind this in a viewModel in order to retrieve the information and send it back to the controller by adding a new class in the model folder *@
+
+@model Laptops.Web.Models.Entities.Laptop //by writing this line, we can now access the properties in the AddLaptopViewModel
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Delete Item</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+        <form method="post" class="row">
+            <input asp-for="Id" hidden />
+            <div class="border p-3 mt-4">
+
+                <div class="form-floating py-2 col-12">
+                    <input type="text" class="form-control border-0 shadow" asp-for="Name" readonly disabled/>
+                    <label asp-for="Name" class="form-label ms-2"></label>
+                </div>
+                
+
+                <div class="form-floating py-2 col-12">
+                    <input type="text" class="form-control border-0 shadow" asp-for="Description" disabled />
+                    <label asp-for="Description" class="form-label ms-2"></label>
+                </div>
+                
+
+                <div class="form-floating py-2 col-12">
+                    <input type="text" class="form-control border-0 shadow" asp-for="Brand" readonly disabled />
+                    <label asp-for="Brand" class="form-label ms-2"></label>
+                </div>
+               
+
+                <div class="form-floating py-2 col-12">
+                    <input type="text" class="form-control border-0 shadow" asp-for="Price" disabled />
+                    <label asp-for="Price" class="form-label ms-2"></label>
+                </div>
+               
+
+                <div class="mt-3">
+                    <input type="checkbox" class="form-check-input" id="Available" asp-for="Available" disabled />
+                    <label asp-for="Available" class="form-check-label" for="Available"></label>
+                </div>
+                
+
+                <div class="row pt-2">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn-danger form-control" onclick="return confirm('Proceed?')"><i class="bi bi-trash3"></i> Delete</button>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Laptops" asp-action="List" class="btn btn-outline-primary border form-control"><i class="bi bi-arrow-return-left"></i> Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

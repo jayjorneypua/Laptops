@@ -1,0 +1,21 @@
+﻿@if (TempData["success"] != null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script> //we need jquery in order to use the toastr notification from the wwwroot
+    <script src="
+//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.success('@TempData["success"]');
+    </script>
+    //if create, update, delete is sucess, it will show this message from the controller.
+}
+
+@if (TempData["error"] is not null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="
+//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.error('@TempData["success"]');
+    </script>
+    //if create, update, delete is sucess, it will show this message from the controller.
+}
