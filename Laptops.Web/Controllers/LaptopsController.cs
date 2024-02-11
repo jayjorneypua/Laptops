@@ -2,12 +2,8 @@
 using Laptops.Web.DTO;
 using Laptops.Web.Models;
 using Laptops.Web.Models.Entities;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
-using System;
-using System.Linq;
 
 namespace Laptops.Web.Controllers
 {
@@ -37,34 +33,34 @@ namespace Laptops.Web.Controllers
         }
 
         [HttpPost] // Once the submit is clicked in the view of Add, it will be send here at the httpPost
-        public async Task<IActionResult> Add(LaptopAddRequestDTO obj)
+        public async Task<IActionResult> Add(LaptopAddRequestDTO laptopAddRequestDTO)
         {
-            var DTO = new Laptop
+            var laptop = new Laptop
             {
-                Name = obj.Name,
-                Description = obj.Description,
-                Brand = obj.Brand,
-                Price = obj.Price,
-                Available = obj.Available,
+                Name = laptopAddRequestDTO.Name,
+                Description = laptopAddRequestDTO.Description,
+                Brand = laptopAddRequestDTO.Brand,
+                Price = laptopAddRequestDTO.Price,
+                Available = laptopAddRequestDTO.Available,
             };
 
             if (ModelState.IsValid)
             {
                 string wwwRootPath = _hostingEnvironment.WebRootPath;
-                if (obj.Photo != null)
+                if (laptopAddRequestDTO.Photo != null)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(obj.Photo.FileName);
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(laptopAddRequestDTO.Photo.FileName);
                     string productPath = Path.Combine(wwwRootPath, @"images");
 
                     using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                     {
-                        obj.Photo.CopyTo(fileStream);
+                        laptopAddRequestDTO.Photo.CopyTo(fileStream);
                     }
 
-                    DTO.ImageUrl = @"\images\" + fileName;
+                    laptop.ImageUrl = @"\images\" + fileName;
                 }
 
-                await dbContext.LaptopTable.AddAsync(DTO);
+                await dbContext.LaptopTable.AddAsync(laptop);
                 await dbContext.SaveChangesAsync();
                 TempData["success"] = "Item added successfully!";
                 return RedirectToAction("List");
@@ -88,39 +84,44 @@ namespace Laptops.Web.Controllers
                 return NotFound();
             }
 
-            return View(laptopFromDb);
+            TempData["ImageUrl"] = laptopFromDb.ImageUrl;
+
+            var laptopUpdateRequestDTO = new LaptopUpdateRequestDTO()
+            {
+                Id = laptopFromDb.Id,
+                Name = laptopFromDb.Name,
+                Available = laptopFromDb.Available,
+                Brand = laptopFromDb.Brand,
+                Description = laptopFromDb.Description,
+                Price = laptopFromDb.Price,
+            };
+
+            return View(laptopUpdateRequestDTO);
         }
 
         [HttpPost]
-        public IActionResult Update(LaptopAddRequestDTO obj) 
+        public IActionResult Update(LaptopUpdateRequestDTO laptopUpdateRequestDTO)
         {
-            var DTO = new Laptop
-            {
-                Name = obj.Name,
-                Description = obj.Description,
-                Brand = obj.Brand,
-                Price = obj.Price,
-                Available = obj.Available,
-
-            };
+            var laptop = dbContext.LaptopTable.Find(laptopUpdateRequestDTO.Id);
+            if (laptop == null) return NotFound();
 
             if (ModelState.IsValid)
             {
                 string wwwRootPath = _hostingEnvironment.WebRootPath;
-                if (obj.Photo != null)
+                if (laptopUpdateRequestDTO.Photo != null)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(obj.Photo.FileName);
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(laptopUpdateRequestDTO.Photo.FileName);
                     string productPath = Path.Combine(wwwRootPath, @"images");
 
                     using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                     {
-                        obj.Photo.CopyTo(fileStream);
+                        laptopUpdateRequestDTO.Photo.CopyTo(fileStream);
                     }
 
-                    DTO.ImageUrl = @"\images\" + fileName;
+                    laptop.ImageUrl = @"\images\" + fileName;
                 }
 
-                dbContext.LaptopTable.Update(DTO);
+                dbContext.LaptopTable.Update(laptop);
                 dbContext.SaveChanges();
                 TempData["success"] = "Item details was changed successfully!";
                 return RedirectToAction("List");
@@ -147,18 +148,18 @@ namespace Laptops.Web.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            Laptop? obj = dbContext.LaptopTable.Find(id);
-            if (obj == null)
+            var laptop = dbContext.LaptopTable.Find(id);
+            if (laptop == null)
             {
                 return NotFound();
             }
 
-            dbContext.LaptopTable.Remove(obj);
+            dbContext.LaptopTable.Remove(laptop);
             dbContext.SaveChanges();
             TempData["success"] = "Item deleted successfully!";
             return RedirectToAction("List");
         }
-        
-    }  
-    
+
+    }
+
 }
